@@ -3,6 +3,9 @@ WebNI
 
 A WebSocket Server of OpenNI 2 and NiTE 2.
 
+It's still not work now.
+
+====
 Library requirement:
 1. Boost C++ Libraries
     http://www.boost.org/
@@ -15,6 +18,8 @@ Library requirement:
 
 3. PrimeSense NiTE 2
     http://www.openni.org/files/nite/
+
+====
 
 Build environment:
 1. Windows 7 Pro

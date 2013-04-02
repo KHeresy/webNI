@@ -60,6 +60,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(BOOST_LIB);$(OPENNI2_LIB);$(NITE2_LIB)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenNI2.lib;NiTE2.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -79,6 +80,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(BOOST_LIB);$(OPENNI2_LIB);$(NITE2_LIB)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenNI2.lib;NiTE2.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

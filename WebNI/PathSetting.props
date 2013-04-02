@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <BOOST_INCLUDE>..\..\boost153\</BOOST_INCLUDE>
+    <BOOST_LIB>..\..\boost153\stage\lib</BOOST_LIB>
+    <WEBSOCKETPP_INCLUDE>..\..\websocketpp</WEBSOCKETPP_INCLUDE>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>NOMINMAX;_WEBSOCKETPP_CPP11_CHRONO_;_WEBSOCKETPP_CPP11_FUNCTIONAL_;;_WEBSOCKETPP_CPP11_MEMORY_; _WEBSOCKETPP_CPP11_RANDOM_DEVICE_ ;_WEBSOCKETPP_CPP11_REGEX_;_WEBSOCKETPP_CPP11_SYSTEM_ERROR_; _WEBSOCKETPP_CPP11_THREAD_ </PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="BOOST_INCLUDE">
+      <Value>$(BOOST_INCLUDE)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BOOST_LIB">
+      <Value>$(BOOST_LIB)</Value>
+    </BuildMacro>
+    <BuildMacro Include="WEBSOCKETPP_INCLUDE">
+      <Value>$(WEBSOCKETPP_INCLUDE)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

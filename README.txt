@@ -10,7 +10,7 @@ Library requirement:
 1. Boost C++ Libraries
     http://www.boost.org/
 
-2. WebSocket++
+2. WebSocket++ 0.3
     http://www.zaphoyd.com/websocketpp
 
 3. OpenNI 2
@@ -18,6 +18,12 @@ Library requirement:
 
 3. PrimeSense NiTE 2
     http://www.openni.org/files/nite/
+
+Please modify the file PathSetting.props (a XML file) for the 3 macros
+1. BOOST_INCLUDE
+2. BOOST_LIB
+3. WEBSOCKETPP_INCLUDE
+
 
 ====
 

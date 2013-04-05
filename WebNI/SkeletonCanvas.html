@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <META charset="utf-8" />
+    <TITLE>WebNI Demo - Skeleton Canvas</TITLE>
+
+   <script type="text/javascript">
+       var wsNIServer;
+       var output;
+
+       function ConnectServer()
+       {
+           output = document.getElementById("output");
+           var wsServer = document.getElementById("wsServerUri").value;
+
+           wsNIServer = new WebSocket(wsServer);
+
+           wsServer.onopen = function (evt) {
+               onOpen(evt)
+           };
+
+           wsServer.onclose = function (evt) {
+               onClose(evt)
+           };
+
+           wsServer.onmessage = function (evt) {
+               onMessage(evt)
+           };
+
+           wsServer.onerror = function (evt) {
+               onError(evt)
+           };
+       }
+
+       function onOpen(evt) {
+           document.getElementById("wsServerUri").disabled = true;
+           document.getElementById("butConnect").value = "disconnect";
+           writeToScreen("CONNECTED");
+           doSend("WebSocket rocks");
+       }
+
+       function onClose(evt) {
+           writeToScreen("DISCONNECTED");
+       }
+
+       function onMessage(evt) {
+           writeToScreen('<span style="color:blue;">RESPONSE:' + evt.data + '</span>');
+           websocket.close();
+       }
+
+       function onError(evt) {
+           writeToScreen('<span style="color:red;">ERROR:</span>' + evt.data);
+       }
+
+       function doSend(message) {
+           writeToScreen("SENT: " + message);
+           wsServer.send(message);
+       }
+
+       function writeToScreen(message) {
+           var pre = document.createElement("p");
+           pre.style.wordWrap = "break-word";
+           pre.innerHTML = message;
+           output.appendChild(pre);
+       }
+    </script>
+</HEAD>
+<BODY>
+    <h2>WebNI Canvas Demo</h2>
+    <div>
+        <span>Server:</span>
+        <input id="wsServerUri" type="text" value="ws://localhost:9002/" />
+        <input id="butConnect" type="submit" value="connect" onclick="ConnectServer()" />
+    </div>
+    <div id="output"></div>
+</BODY>
+</HTML>

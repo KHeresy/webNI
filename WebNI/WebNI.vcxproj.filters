@@ -9,9 +9,16 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="HTML">
+      <UniqueIdentifier>{67c9fb9a-3a02-43f4-9a4e-5ff32b557d22}</UniqueIdentifier>
+      <Extensions>htm;html</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NIModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -19,5 +26,13 @@
     <ClInclude Include="ConnectionState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NIModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SkeletonCanvas.html">
+      <Filter>HTML</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -13,23 +13,20 @@
 #include <boost/format.hpp>
 #include <boost/program_options.hpp>
 
-// OpenNI and NiTE Header
-#include <OpenNI.h>
-#include <NiTE.h>
-
 // application Header
 #include "ConnectionState.h"
+#include "NIModule.h"
 
 #pragma endregion
 
+#pragma region Some type defination
 typedef websocketpp::config::asio														TConfig;
 typedef websocketpp::server<TConfig>													TServer;
 typedef websocketpp::endpoint<websocketpp::connection<TConfig>,TConfig>::connection_ptr	TConnection;
+#pragma endregion
 
 #pragma region Global Objects
-// OpenNI and NiTE objects
-openni::Device		g_Device;
-nite::UserTracker	g_UserTracker;
+NIModule	g_NIModule;
 
 // WebSocket++ Objects
 TServer*	g_pServer = NULL;
@@ -40,76 +37,77 @@ std::map<nite::UserId,nite::Skeleton>	g_UsersData;
 
 #pragma endregion
 
-//
+// TODO: Don't know where to call this?
 void ExitProgram()
 {
-	g_UserTracker.destroy();
-	nite::NiTE::shutdown();
-
-	g_Device.close();
-	openni::OpenNI::shutdown();
-
 	g_pServer->stop();
 	delete g_pServer;
 }
 
-// Callback function of WebSocket++
-void onMessage(	websocketpp::connection_hdl hdl,
-				TServer::message_ptr msg )
+inline void sendTextMessage( websocketpp::connection_hdl& hdl, const std::string& rMsg )
+{
+	g_pServer->send( hdl, rMsg, websocketpp::frame::opcode::TEXT );
+}
+
+#pragma region Callback function of WebSocket++
+void onMessage( websocketpp::connection_hdl hdl, TServer::message_ptr msg )
 {
 	TConnection mCon = g_pServer->get_con_from_hdl( hdl );
 	auto itCon = g_mapConnection.find( mCon );
 	if( itCon != g_mapConnection.end() )
 	{
-		
+		if( msg->get_opcode() == websocketpp::frame::opcode::TEXT )
+		{
+			try
+			{
+				std::stringstream ssInput( msg->get_payload() );
+				std::string sCmd;
+				ssInput >> sCmd;
+				if( sCmd == "get" )
+				{
+					ssInput >> sCmd;
+					if( sCmd == "skeleton" )
+					{
+					}
+					else if( sCmd == "depth_size" )
+					{
+						auto aSize = g_NIModule.getDepthSize();
+						sendTextMessage( hdl, ( boost::format("%1%/%2%") % aSize[0] % aSize[1] ).str() );
+					}
+				}
+			}
+			catch( ... )
+			{
+				std::cerr << "Command prase error" << std::endl;
+			}
+		}
 	}
 	else
 	{
-		g_pServer->send( hdl, "Can't found mapping connection state.", websocketpp::frame::opcode::TEXT );
+		sendTextMessage( hdl, "Can't found mapping connection state." );
 	}
-	g_pServer->send( hdl, "Can't found mapping connection state.", websocketpp::frame::opcode::TEXT );
 	std::cout << msg->get_payload() << std::endl;
 }
 
 void onOpen( websocketpp::connection_hdl hdl )
 {
+	// Insert a new data pair
 	g_mapConnection.insert( std::make_pair( g_pServer->get_con_from_hdl( hdl ), ConnectionState() ) );
 }
 
 void onClose( websocketpp::connection_hdl hdl )
 {
+	// remove closed connection data pair
 	g_mapConnection.erase( g_pServer->get_con_from_hdl( hdl ) );
 }
 
 void onTimer( const websocketpp::lib::error_code& e )
 {
-	nite::UserTrackerFrameRef mFrame;
-	if( g_UserTracker.readFrame( &mFrame ) == nite::STATUS_OK )
-	{
-		auto& aUsers = mFrame.getUsers();
-		for( int i = 0; i < aUsers.getSize(); ++ i )
-		{
-			auto& rUser = aUsers[i];
-
-			if( rUser.isNew() )
-			{
-				std::cout << " [NiTE] Found new user: " << rUser.getId() << std::endl;
-				g_UserTracker.startSkeletonTracking( rUser.getId() );
-				g_UsersData.insert( std::make_pair( rUser.getId(), nite::Skeleton() ) );
-			}
-			else if( rUser.isLost() )
-			{
-				std::cout << " [NiTE] Lost user: " << rUser.getId() << std::endl;
-				g_UsersData.erase( rUser.getId() );
-			}
-			else
-			{
-				g_UsersData[rUser.getId()] = rUser.getSkeleton();
-			}
-		}
-	}
+	g_NIModule.UpdateData();
 	g_pServer->set_timer( 30, &onTimer );
 }
+
+#pragma endregion
 
 // Main Function
 int main( int argc, char** argv )
@@ -153,50 +151,27 @@ int main( int argc, char** argv )
 	#pragma endregion
 
 	#pragma region Initialize OpenNI and NiTE
-	// initialize OpenNI
-	std::cout << "Initialize OpenNI" << std::endl;
-	if( openni::OpenNI::initialize() != openni::STATUS_OK )
+	if( !g_NIModule.Initialize( sDevice.c_str() ) )
 	{
-		std::cerr << " [ERROR] Can't initialize OpenNI: " << openni::OpenNI::getExtendedError() << std::endl;
-		return -1;
-	}
-
-	// Open OpenNI Device
-	std::cout << "Open OpenNI Device" << std::endl;
-	if( g_Device.open( sDevice.c_str() ) != openni::STATUS_OK )
-	{
-		std::cerr << " [ERROR] Can't open OpenNI Device: " << openni::OpenNI::getExtendedError() << std::endl;
-		return -1;
-	}
-
-	// Initialize NiTE
-	std::cout << "Initialize NiTE" << std::endl;
-	if( nite::NiTE::initialize() != nite::STATUS_OK )
-	{
-		std::cerr << " [ERROR] Can't initialize NiTE" << std::endl;
-		return -1;
-	}
-
-	// create UserTracker
-	std::cout << "Cretae NiTE UserTracker" << std::endl;
-	if( g_UserTracker.create( &g_Device ) != nite::STATUS_OK )
-	{
-		std::cerr << " [ERROR] Can't create NiTE User Tracker" << std::endl;
+		std::cerr << " [ERROR] Can't initialize OpenNI and NiTE." << std::endl;
 		return -1;
 	}
 	#pragma endregion
 
 	#pragma region Initialize WebSocket++
-	// initialize
 	g_pServer = new TServer();
+
+	// set connection callback function
+	g_pServer->set_message_handler( &onMessage );
+	g_pServer->set_open_handler( &onOpen );
+	g_pServer->set_close_handler( &onClose );
+
+	// initialize
 	g_pServer->init_asio();
 	g_pServer->listen( iPort );
 	g_pServer->start_accept();
 
-	// set callback functions
-	g_pServer->set_message_handler( &onMessage );
-	g_pServer->set_open_handler( &onOpen );
-	g_pServer->set_close_handler( &onClose );
+	// set timer callback functions
 	g_pServer->set_timer( 30, &onTimer );
 
 	// run

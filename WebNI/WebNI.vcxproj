@@ -85,9 +85,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NIModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConnectionState.h" />
+    <ClInclude Include="NIModule.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SkeletonCanvas.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

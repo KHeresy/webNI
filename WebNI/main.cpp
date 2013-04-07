@@ -49,6 +49,12 @@ inline void sendTextMessage( websocketpp::connection_hdl& hdl, const std::string
 	g_pServer->send( hdl, rMsg, websocketpp::frame::opcode::TEXT );
 }
 
+template<typename TCon>
+inline void sendArrayData( websocketpp::connection_hdl& hdl, const TCon& rData )
+{
+	g_pServer->send( hdl, rData.data(), rData.size() * sizeof(rData[0]), websocketpp::frame::opcode::BINARY );
+}
+
 #pragma region Callback function of WebSocket++
 void onMessage( websocketpp::connection_hdl hdl, TServer::message_ptr msg )
 {
@@ -71,14 +77,47 @@ void onMessage( websocketpp::connection_hdl hdl, TServer::message_ptr msg )
 					}
 					else if( sCmd == "depth_size" )
 					{
-						auto aSize = g_NIModule.getDepthSize();
-						g_pServer->send( hdl, (const void *)(&aSize), sizeof(aSize), websocketpp::frame::opcode::BINARY );
+						sendArrayData( hdl, g_NIModule.getDepthSize() );
+					}
+					else if( sCmd == "user_list" )
+					{
+						auto aList = g_NIModule.getUserList();
+						if( aList.size() == 0 )
+							aList.push_back(0);
+						sendArrayData( hdl, aList );
+					}
+					else if( sCmd == "user" )
+					{
+						uint16_t uID;
+						ssInput >> uID;
+
+						ssInput >> sCmd;
+						if( sCmd == "skeleton" )
+						{
+							if( g_NIModule.isTracked( uID ) )
+							{
+								if( sCmd == "2D" )
+								{
+									auto aSk = g_NIModule.getSkeleton2D(uID);
+									sendArrayData( hdl, aSk );
+								}
+								else if( sCmd == "3D" )
+								{
+									auto aSk = g_NIModule.getSkeleton3D(uID);
+									sendArrayData( hdl, aSk );
+								}
+							}
+							else
+							{
+								sendTextMessage( hdl, "The user is not tracked" );
+							}
+						}
 					}
 				}
 			}
 			catch( ... )
 			{
-				std::cerr << "Command prase error" << std::endl;
+				sendTextMessage( hdl, "No such command." );
 			}
 		}
 	}
@@ -151,7 +190,7 @@ int main( int argc, char** argv )
 	#pragma endregion
 
 	#pragma region Initialize OpenNI and NiTE
-	if( !g_NIModule.Initialize( sDevice.c_str() ) )
+	if( !g_NIModule.Initialize( sDevice ) )
 	{
 		std::cerr << " [ERROR] Can't initialize OpenNI and NiTE." << std::endl;
 		return -1;

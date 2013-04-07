@@ -72,7 +72,7 @@ void onMessage( websocketpp::connection_hdl hdl, TServer::message_ptr msg )
 					else if( sCmd == "depth_size" )
 					{
 						auto aSize = g_NIModule.getDepthSize();
-						sendTextMessage( hdl, ( boost::format("%1%/%2%") % aSize[0] % aSize[1] ).str() );
+						g_pServer->send( hdl, (const void *)(&aSize), sizeof(aSize), websocketpp::frame::opcode::BINARY );
 					}
 				}
 			}

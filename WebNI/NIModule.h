@@ -30,7 +30,7 @@ public:
 	/**
 	 * Get the width and height of depth map
 	 */
-	std::array<unsigned int,2> getDepthSize() const;
+	std::array<uint16_t,2> getDepthSize() const;
 
 	unsigned int getUserNum() const;
 

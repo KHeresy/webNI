@@ -23,10 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ConnectionState.h">
+    <ClInclude Include="NIModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NIModule.h">
+    <ClInclude Include="ConnectionState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

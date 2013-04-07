@@ -1,77 +1,88 @@
 <!DOCTYPE html>
 <HTML>
 <HEAD>
-    <META charset="utf-8" />
-    <TITLE>WebNI Demo - Skeleton Canvas</TITLE>
+	<META charset="utf-8" />
+	<TITLE>WebNI Demo - Skeleton Canvas</TITLE>
+	
+	<script type="text/javascript">
+		var wsNIServer;
+		var output;
 
-   <script type="text/javascript">
-       var wsNIServer;
-       var output;
+		function ConnectServer() {
+			output = document.getElementById("output");
+			var wsServer = document.getElementById("wsServerUri").value;
 
-       function ConnectServer()
-       {
-           output = document.getElementById("output");
-           var wsServer = document.getElementById("wsServerUri").value;
+			wsNIServer = new WebSocket(wsServer);
+			wsNIServer.binaryType = "arraybuffer";
 
-           wsNIServer = new WebSocket(wsServer);
+			wsNIServer.onopen = function (evt)
+			{
+				document.getElementById("wsServerUri").disabled = true;
+				document.getElementById("butConnect").value = "disconnect";
+				document.getElementById("butConnect").onclick = DisconnectServer;
+				writeToScreen("CONNECTED");
 
-           wsServer.onopen = function (evt) {
-               onOpen(evt)
-           };
+				wsNIServer.onmessage = function (msg) {
+					if (msg.data instanceof ArrayBuffer) {
+						var bytes = new Uint16Array(msg.data);
+						writeToScreen("Depth size: " + bytes[0] + "/" + bytes[1]);
+					}
+				};
+				wsNIServer.send("get depth_size");
+			};
 
-           wsServer.onclose = function (evt) {
-               onClose(evt)
-           };
+			wsNIServer.onclose = function (evt) {
+				onClose(evt)
+			};
 
-           wsServer.onmessage = function (evt) {
-               onMessage(evt)
-           };
 
-           wsServer.onerror = function (evt) {
-               onError(evt)
-           };
-       }
+			wsNIServer.onerror = function (evt) {
+				onError(evt)
+			};
+		}
 
-       function onOpen(evt) {
-           document.getElementById("wsServerUri").disabled = true;
-           document.getElementById("butConnect").value = "disconnect";
-           writeToScreen("CONNECTED");
-           doSend("WebSocket rocks");
-       }
+		function DisconnectServer() {
+			wsNIServer.close();
+			document.getElementById("wsServerUri").disabled = false;
+			document.getElementById("butConnect").value = "connect";
+			document.getElementById("butConnect").onclick = ConnectServer;
+		}
 
-       function onClose(evt) {
-           writeToScreen("DISCONNECTED");
-       }
+		function onClose(evt) {
+			writeToScreen("DISCONNECTED");
+			DisconnectServer();
+		}
 
-       function onMessage(evt) {
-           writeToScreen('<span style="color:blue;">RESPONSE:' + evt.data + '</span>');
-           websocket.close();
-       }
+		function onMessage(evt) {
+			writeToScreen('<span style="color:blue;">RESPONSE:' + evt.data + '</span>');
+			//wsNIServer.close();
+		}
 
-       function onError(evt) {
-           writeToScreen('<span style="color:red;">ERROR:</span>' + evt.data);
-       }
+		function onError(evt) {
+			writeToScreen('<span style="color:red;">ERROR:</span>' + evt.data);
+		}
 
-       function doSend(message) {
-           writeToScreen("SENT: " + message);
-           wsServer.send(message);
-       }
+		function doSend(message) {
+			writeToScreen("SENT: " + message);
+			wsNIServer.send(message);
+		}
 
-       function writeToScreen(message) {
-           var pre = document.createElement("p");
-           pre.style.wordWrap = "break-word";
-           pre.innerHTML = message;
-           output.appendChild(pre);
-       }
-    </script>
+		function writeToScreen(message) {
+			var pre = document.createElement("p");
+			pre.style.wordWrap = "break-word";
+			pre.innerHTML = message;
+			output.appendChild(pre);
+		}
+	</script>
 </HEAD>
+
 <BODY>
-    <h2>WebNI Canvas Demo</h2>
-    <div>
-        <span>Server:</span>
-        <input id="wsServerUri" type="text" value="ws://localhost:9002/" />
-        <input id="butConnect" type="submit" value="connect" onclick="ConnectServer()" />
-    </div>
-    <div id="output"></div>
+	<h2>WebNI Canvas Demo</h2>
+	<div>
+		<span>Server:</span>
+		<input id="wsServerUri" type="text" value="ws://localhost:9002/" />
+		<input id="butConnect" type="submit" value="connect" onclick="ConnectServer()" />
+	</div>
+	<div id="output"></div>
 </BODY>
 </HTML>

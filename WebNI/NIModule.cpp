@@ -90,8 +90,8 @@ void NIModule::UpdateData()
 	}
 }
 
-array<unsigned int,2> NIModule::getDepthSize() const
+array<uint16_t,2> NIModule::getDepthSize() const
 {
-	array<unsigned int,2> aSize = { m_DepthMode.getResolutionX(), m_DepthMode.getResolutionY() };
+	array<uint16_t,2> aSize = { m_DepthMode.getResolutionX(), m_DepthMode.getResolutionY() };
 	return aSize;
 }

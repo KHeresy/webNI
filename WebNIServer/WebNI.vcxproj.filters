@@ -31,7 +31,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SkeletonCanvas.html">
+    <None Include="..\TestWeb\SkeletonCanvas.html">
       <Filter>HTML</Filter>
     </None>
   </ItemGroup>

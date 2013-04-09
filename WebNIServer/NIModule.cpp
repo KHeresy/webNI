@@ -120,6 +120,7 @@ void NIModule::UpdateData()
 					aJointList[13]	= rSkeleton.getJoint( nite::JOINT_LEFT_FOOT			);
 					aJointList[14]	= rSkeleton.getJoint( nite::JOINT_RIGHT_FOOT		);
 
+					#pragma omp parallel for
 					for( int i = 0; i < 15; ++ i )
 					{
 						const Point3f& rPos = aJointList[i].getPosition();

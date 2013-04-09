@@ -73,6 +73,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(BOOST_INCLUDE);$(WEBSOCKETPP_INCLUDE);$(OPENNI2_INCLUDE);$(NITE2_INCLUDE)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -92,7 +93,7 @@
     <ClInclude Include="NIModule.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SkeletonCanvas.html" />
+    <None Include="..\TestWeb\SkeletonCanvas.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

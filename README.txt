@@ -4,6 +4,10 @@ WebNI
 A WebSocket Server of OpenNI 2 and NiTE 2.
 
 Now I have first workable demo, 2D skeleton only
+Simple demo video
+http://www.youtube.com/watch?v=tPKgvlb4stk
+
+My Blog: http://kheresy.wordpress.com/ (Chinese)
 
 ====
 Library requirement:

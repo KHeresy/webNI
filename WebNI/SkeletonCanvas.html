@@ -5,6 +5,8 @@
 	<TITLE>WebNI Demo - Skeleton Canvas</TITLE>
 	
 	<script type="text/javascript">
+		"use strict";
+
 		var wsNIServer;
 		var canvImg;
 		var ctxCanvas;
@@ -65,9 +67,6 @@
 		}
 
 		function UpdateData() {
-			// clear canvas
-			ctxCanvas.clearRect(0, 0, ctxCanvas.width, ctxCanvas.height);
-
 			// Get user list first
 			wsNIServer.onmessage = function (msg) {
 				if (msg.data instanceof ArrayBuffer) {
@@ -77,7 +76,12 @@
 						wsNIServer.onmessage = function (msg) {
 							if (msg.data instanceof ArrayBuffer) {
 								var aSkeleton = new Float32Array(msg.data);
-								writeToScreen(aSkeleton[0] + "/" + aSkeleton[1] + "/" + aSkeleton[2]);
+								// clear canvas
+								ctxCanvas.moveTo(0, 0);
+								ctxCanvas.clearRect(0, 0, ctxCanvas.canvas.width, ctxCanvas.canvas.height);
+								ctxCanvas.beginPath();
+
+								// draw skeleton
 								DrawLine(ctxCanvas, aSkeleton, 0, 1);
 								DrawLine(ctxCanvas, aSkeleton, 1, 2);
 								DrawLine(ctxCanvas, aSkeleton, 2, 4);
@@ -92,18 +96,17 @@
 								DrawLine(ctxCanvas, aSkeleton, 8, 10);
 								DrawLine(ctxCanvas, aSkeleton, 10, 12);
 								DrawLine(ctxCanvas, aSkeleton, 12, 14);
+								ctxCanvas.stroke();
 
 								for (var iJoint = 0; iJoint < aSkeleton.length / 3; ++iJoint) {
 								}
-
-								idTimer = setTimeout(UpdateData, 500);
-
 							}
+							idTimer = setTimeout(UpdateData, 50);
 						}
 						wsNIServer.send("get user " + aList[0] + " skeleton 2D");
 					}
 					else {
-						idTimer = setTimeout(UpdateData, 500);
+						idTimer = setTimeout(UpdateData, 50);
 					}
 				}
 				else {

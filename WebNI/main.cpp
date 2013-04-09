@@ -96,6 +96,7 @@ void onMessage( websocketpp::connection_hdl hdl, TServer::message_ptr msg )
 						{
 							if( g_NIModule.isTracked( uID ) )
 							{
+								ssInput >> sCmd;
 								if( sCmd == "2D" )
 								{
 									auto aSk = g_NIModule.getSkeleton2D(uID);
@@ -105,6 +106,10 @@ void onMessage( websocketpp::connection_hdl hdl, TServer::message_ptr msg )
 								{
 									auto aSk = g_NIModule.getSkeleton3D(uID);
 									sendArrayData( hdl, aSk );
+								}
+								else
+								{
+									sendTextMessage( hdl, "Unknow command" );
 								}
 							}
 							else
@@ -153,6 +158,7 @@ int main( int argc, char** argv )
 {
 	// Porgram Setting
 	int			iPort;
+	bool		bServerLogDisplay;
 	std::string	sDevice	= "";//openni::ANY_DEVICE;
 
 	#pragma region Use boost::program_options to handle runtime setting
@@ -163,6 +169,7 @@ int main( int argc, char** argv )
 		BPO::options_description bpoOptions( "Command Line Options" );
 		bpoOptions.add_options()
 			( "help,H",	BPO::bool_switch()->notifier( [&bpoOptions]( bool bH ){ if( bH ){ std::cout << bpoOptions << std::endl; exit(0); } } ),	"Help message" )
+			( "dlog",	BPO::bool_switch(&bServerLogDisplay),									"Display WebSocket Server log" )
 			( "port,P", BPO::value(&iPort)->value_name("port_num")->default_value(9002),		"The port to listen" )
 			( "file,F",	BPO::value(&sDevice)->value_name("ONI_File"),							"Open an ONI file for test" );
 
@@ -170,7 +177,7 @@ int main( int argc, char** argv )
 		try
 		{
 			BPO::variables_map mVMap;
-			BPO::store( BPO::parse_command_line( argc, argv, bpoOptions ), mVMap );
+			BPO::store( BPO::command_line_parser( argc, argv ).options( bpoOptions ).allow_unregistered().run(), mVMap );
 			BPO::notify( mVMap );
 		}
 		catch( BPO::error_with_option_name e )
@@ -199,6 +206,11 @@ int main( int argc, char** argv )
 
 	#pragma region Initialize WebSocket++
 	g_pServer = new TServer();
+	if( !bServerLogDisplay )
+	{
+		g_pServer->set_access_channels(websocketpp::log::alevel::none);
+		g_pServer->clear_access_channels(websocketpp::log::alevel::all);
+	}
 
 	// set connection callback function
 	g_pServer->set_message_handler( &onMessage );

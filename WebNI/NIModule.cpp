@@ -99,7 +99,7 @@ void NIModule::UpdateData()
 			}
 			else if( rUser.isVisible() )
 			{
-				auto rUserData = m_UserList[uID];
+				auto& rUserData = m_UserList[uID];
 				const Skeleton& rSkeleton = rUser.getSkeleton();
 				if( rSkeleton.getState() == nite::SKELETON_TRACKED )
 				{
@@ -132,7 +132,11 @@ void NIModule::UpdateData()
 						rUserData.m_aSkeleton3D[ i * 3 + 2 ] = aJointList[i].getPositionConfidence();
 					}
 
-					rUserData.m_bIsTracked = true;
+					if( !rUserData.m_bIsTracked )
+					{
+						rUserData.m_bIsTracked = true;
+						std::cout << " [NiTE] Strat tracking user: " << uID << std::endl;
+					}
 				}
 				else
 				{

@@ -3,7 +3,7 @@ WebNI
 
 A WebSocket Server of OpenNI 2 and NiTE 2.
 
-It's still not work now.
+Now I have first workable demo, 2D skeleton only
 
 ====
 Library requirement:

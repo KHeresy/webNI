@@ -150,7 +150,7 @@ void NIModule::UpdateData()
 
 array<uint16_t,2> NIModule::getDepthSize() const
 {
-	array<uint16_t,2> aSize = { m_DepthMode.getResolutionX(), m_DepthMode.getResolutionY() };
+	array<uint16_t,2> aSize = { uint16_t(m_DepthMode.getResolutionX()), uint16_t(m_DepthMode.getResolutionY()) };
 	return aSize;
 }
 

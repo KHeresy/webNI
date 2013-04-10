@@ -3,11 +3,13 @@
 <HEAD>
 	<META charset="utf-8" />
 	<TITLE>WebNI Demo - Skeleton Canvas</TITLE>
-	
-	<script type="text/javascript">
-		"use strict";
 
-		var wsNIServer;
+	<script src="../WebNI.js/WebNI.js"></script>
+
+	<script type="text/javascript">
+		var gWebNI = new WebNI();
+		//"use strict";
+
 		var canvImg;
 		var ctxCanvas;
 		var output;
@@ -21,104 +23,72 @@
 
 		function ConnectServer() {
 			var wsServer = document.getElementById("wsServerUri").value;
-
-			wsNIServer = new WebSocket(wsServer);
-			wsNIServer.binaryType = "arraybuffer";
-
-			wsNIServer.onopen = function (evt)
-			{
-				document.getElementById("wsServerUri").disabled = true;
-				document.getElementById("butConnect").value = "disconnect";
-				document.getElementById("butConnect").onclick = DisconnectServer;
-				writeToScreen("CONNECTED");
-
-				// get the size of depth map
-				wsNIServer.onmessage = function (msg) {
-					if (msg.data instanceof ArrayBuffer) {
-						var aSize = new Uint16Array(msg.data);
-						writeToScreen("Depth size: " + aSize[0] + "/" + aSize[1]);
-						canvImg.width = aSize[0];
-						canvImg.height = aSize[1];
-						idTimer = setTimeout(UpdateData, 500);
-					}
-					else {
-						writeError(msg.data);
-					}
-				};
-				wsNIServer.send("get depth_size");
-			};
-
-			wsNIServer.onclose = function (evt) {
+			gWebNI.open(wsServer, function (pWebNI, aDepthSize) {
+				canvImg.width = aDepthSize[0];
+				canvImg.height = aDepthSize[1];
+				writeToScreen("Depth size: " + aDepthSize[0] + "/" + aDepthSize[1]);
+				idTimer = setTimeout(UpdateData, 30);
+			});
+			gWebNI.setOnClose( function() {
 				writeToScreen("DISCONNECTED");
 				DisconnectServer();
-			};
+			} );
 
-			wsNIServer.onerror = function (evt) {
-				writeError(evt.data);
-			};
+			document.getElementById("wsServerUri").disabled = true;
+			document.getElementById("butConnect").value = "disconnect";
+			document.getElementById("butConnect").onclick = function () { gWebNI.close() };
+			writeToScreen("CONNECTED");
 		}
 
 		function DisconnectServer() {
 			clearInterval(idTimer);
-			wsNIServer.close();
 			document.getElementById("wsServerUri").disabled = false;
 			document.getElementById("butConnect").value = "connect";
 			document.getElementById("butConnect").onclick = ConnectServer;
 		}
 
-		function UpdateData() {
-			// Get user list first
-			wsNIServer.onmessage = function (msg) {
-				if (msg.data instanceof ArrayBuffer) {
-					var aList = new Uint16Array(msg.data);
-					if (aList.length > 0 && aList[0] != 0) {
-						// get first user skeleton
-						wsNIServer.onmessage = function (msg) {
-							if (msg.data instanceof ArrayBuffer) {
-								var aSkeleton = new Float32Array(msg.data);
-								// clear canvas
-								ctxCanvas.moveTo(0, 0);
-								ctxCanvas.clearRect(0, 0, ctxCanvas.canvas.width, ctxCanvas.canvas.height);
-								ctxCanvas.beginPath();
-
-								// draw skeleton
-								DrawLine(ctxCanvas, aSkeleton, 0, 1);
-								DrawLine(ctxCanvas, aSkeleton, 1, 2);
-								DrawLine(ctxCanvas, aSkeleton, 2, 4);
-								DrawLine(ctxCanvas, aSkeleton, 4, 6);
-								DrawLine(ctxCanvas, aSkeleton, 1, 3);
-								DrawLine(ctxCanvas, aSkeleton, 3, 5);
-								DrawLine(ctxCanvas, aSkeleton, 5, 7);
-								DrawLine(ctxCanvas, aSkeleton, 1, 8);
-								DrawLine(ctxCanvas, aSkeleton, 8, 9);
-								DrawLine(ctxCanvas, aSkeleton, 9, 11);
-								DrawLine(ctxCanvas, aSkeleton, 11, 13);
-								DrawLine(ctxCanvas, aSkeleton, 8, 10);
-								DrawLine(ctxCanvas, aSkeleton, 10, 12);
-								DrawLine(ctxCanvas, aSkeleton, 12, 14);
-								ctxCanvas.stroke();
-
-								for (var iJoint = 0; iJoint < aSkeleton.length / 3; ++iJoint) {
-								}
-							}
-							idTimer = setTimeout(UpdateData, 50);
-						}
-						wsNIServer.send("get user " + aList[0] + " skeleton 2D");
-					}
-					else {
-						idTimer = setTimeout(UpdateData, 50);
-					}
-				}
-				else {
-					writeError(msg.data);
-				}
-			}
-			wsNIServer.send("get user_list");
+		function DrawLine(joint1, joint2) {
+			ctxCanvas.moveTo(joint1.x, joint1.y);
+			ctxCanvas.lineTo(joint2.x, joint2.y);
 		}
 
-		function DrawLine(ctx, aData, s1, s2 ) {
-			ctx.moveTo(aData[s1 * 3], aData[s1 * 3 + 1]);
-			ctx.lineTo(aData[s2 * 3], aData[s2 * 3 + 1]);
+		function DrawSkeleton(rSkeleton) {
+			if (rSkeleton != null) {
+				ctxCanvas.beginPath();
+				DrawLine(rSkeleton['head'], rSkeleton['neck']);
+				DrawLine(rSkeleton['neck'], rSkeleton['lshoulder']);
+				DrawLine(rSkeleton['lshoulder'], rSkeleton['lelbow']);
+				DrawLine(rSkeleton['lelbow'], rSkeleton['lhand']);
+				DrawLine(rSkeleton['neck'], rSkeleton['rshoulder']);
+				DrawLine(rSkeleton['rshoulder'], rSkeleton['relbow']);
+				DrawLine(rSkeleton['relbow'], rSkeleton['rhand']);
+				DrawLine(rSkeleton['neck'], rSkeleton['torso']);
+				DrawLine(rSkeleton['torso'], rSkeleton['lhip']);
+				DrawLine(rSkeleton['lhip'], rSkeleton['lknee']);
+				DrawLine(rSkeleton['lknee'], rSkeleton['lfoot']);
+				DrawLine(rSkeleton['torso'], rSkeleton['rhip']);
+				DrawLine(rSkeleton['rhip'], rSkeleton['rknee']);
+				DrawLine(rSkeleton['rknee'], rSkeleton['rfoot']);
+				ctxCanvas.stroke();
+			}
+		}
+
+		function UpdateData() {
+			gWebNI.getUserList(function (pWebNI, aUserList) {
+				if (aUserList.length > 0) {
+					gWebNI.getUserSkeleton2D(aUserList[0], function (pWebNI, mSkeleton) {
+						// clear canvas
+						ctxCanvas.clearRect(0, 0, ctxCanvas.canvas.width, ctxCanvas.canvas.height);
+						if (mSkeleton != null) {
+							DrawSkeleton(mSkeleton);
+						}
+						idTimer = setTimeout(UpdateData, 30);
+					});
+				}
+				else {
+					idTimer = setTimeout(UpdateData, 30);
+				}
+			});
 		}
 
 		function writeToScreen(message) {

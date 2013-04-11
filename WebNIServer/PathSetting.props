@@ -4,6 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <BOOST_INCLUDE>..\..\boost153\</BOOST_INCLUDE>
     <BOOST_LIB>..\..\boost153\stage\lib</BOOST_LIB>
+    <BOOST_LIB64>..\..\boost153\stage\lib64</BOOST_LIB64>
     <WEBSOCKETPP_INCLUDE>..\..\websocketpp</WEBSOCKETPP_INCLUDE>
   </PropertyGroup>
   <PropertyGroup />
@@ -18,6 +19,9 @@
     </BuildMacro>
     <BuildMacro Include="BOOST_LIB">
       <Value>$(BOOST_LIB)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BOOST_LIB64">
+      <Value>$(BOOST_LIB64)</Value>
     </BuildMacro>
     <BuildMacro Include="WEBSOCKETPP_INCLUDE">
       <Value>$(WEBSOCKETPP_INCLUDE)</Value>

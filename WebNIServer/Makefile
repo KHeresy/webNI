@@ -3,15 +3,15 @@
 
 INC_PATH 	= -I. \
 		-I/usr/include \
-		-I/Build/heresy/E3D_V3/external_linux/include \
-		-I/Build/heresy/E3D_V3/external/include/OpenNI \
-		-I/Build/heresy/E3D_V3/external/include/NiTE \
-		-I/Build/heresy/E3D_V3/external/include/
+		-I/../../WebSocket \
+		-I/../../OpenNI \
+		-I/../../NiTE \
+		-I/../../Boost
 
 LIB_PATH	= -L/usr/lib \
-		-L/opt/cuda/lib64 \
-		-L../../../lib \
-		-L/Build/heresy/E3D_V3/external_linux/lib
+		-L../../OpenNI/lib \
+		-L../../NiTE/lib \
+		-L../../Boost/lib
 
 LIBS =	-lboost_program_options \
 				-lboost_system \

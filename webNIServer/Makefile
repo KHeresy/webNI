@@ -21,9 +21,9 @@ LIBS =	-lboost_program_options \
 COMDEF =	-std=c++0x \
 					-Dlinux
 
-all: WebNIServer
+all: webNIServer
 
-WebNIServer: NIModule.o main.o
+webNIServer: NIModule.o main.o
 	gcc -o $@ $^ $(LIB_PATH) $(LIBS) -lm
 
 .cpp.o:

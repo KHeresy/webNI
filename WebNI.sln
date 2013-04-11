@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WebNIServer", "WebNI.vcxproj", "{C60CEB35-991C-4790-BC62-26501E3B0384}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WebNIServer", "WebNIServer\WebNI.vcxproj", "{C60CEB35-991C-4790-BC62-26501E3B0384}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

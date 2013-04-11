@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C60CEB35-991C-4790-BC62-26501E3B0384}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>WebNI</RootNamespace>
-    <ProjectName>WebNIServer</ProjectName>
+    <RootNamespace>webNI</RootNamespace>
+    <ProjectName>webNIServer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

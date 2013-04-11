@@ -4,13 +4,13 @@ function Joint2D(x,y,c) {
 	this.c = x;
 }
 
-function WebNI() {
+function webNI() {
 	//public  member function
 
 	// connect with remote server
 	//	sURI		WebSocket Server URI, ex: ws://localhost:9002/
 	//	onDoneFunc	Callback function when done. 
-	//				This function will get two result, this WebNI object and an array [w,h]
+	//				This function will get two result, this webNI object and an array [w,h]
 	this.open = function (sURI, onDoneFunc) {
 		var pThis = this;
 
@@ -32,7 +32,7 @@ function WebNI() {
 
 	// get current user list
 	//	onDoneFunc	Callback function when done. 
-	//				This function will get two result, this WebNI object and an array of UserID
+	//				This function will get two result, this webNI object and an array of UserID
 	this.getUserList = function (onDoneFunc) {
 		var pThis = this;
 		pThis.sStatus = "get user_list";
@@ -58,7 +58,7 @@ function WebNI() {
 	// get user 2D skeleton data
 	//	userId		The id of user to get skeleton, should get from getUserList()
 	//	onDoneFunc	Callback function when done. 
-	//				This function will get two result, this WebNI object and an array of skeleton data.
+	//				This function will get two result, this webNI object and an array of skeleton data.
 	//				The skeleton array use string as key, each joint has 3 value x, y, c.
 	//				If no skeleton can be get, the second value will be null
 	this.getUserSkeleton2D = function (userId, onDoneFunc) {

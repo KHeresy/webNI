@@ -16,6 +16,23 @@ My Blog: http://kheresy.wordpress.com/ (Chinese)
 
 
 ====
+The folders:
+
+1. webNIServer
+    a C++ webNI Server
+
+2. Binary
+    precompiled webNI server binary
+
+3. webNI.js
+    web-based JavaScript webNI client
+
+4. TestWeb
+    Test web page of webNI.js
+
+
+
+====
 Library requirement:
 1. Boost C++ Libraries
     http://www.boost.org/

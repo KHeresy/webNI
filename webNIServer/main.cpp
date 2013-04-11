@@ -193,7 +193,6 @@ int main( int argc, char** argv )
 			return 1;
 		}
 	}
-	// TODO: parse program options
 	#pragma endregion
 
 	#pragma region Initialize OpenNI and NiTE

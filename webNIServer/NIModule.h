@@ -10,6 +10,9 @@
 #include <OpenNI.h>
 #include <NiTE.h>
 
+/**
+ * Class to keep user data
+ */
 class CUserData
 {
 public:
@@ -54,16 +57,25 @@ public:
 	 */
 	std::vector<uint16_t> getUserList() const;
 
+	/**
+	 * Check is the user is under tracking
+	 */
 	bool isTracked( nite::UserId uID )
 	{
 		return m_UserList[uID].m_bIsTracked;
 	}
 
+	/**
+	 * Get user skeleton in depth coordinate
+	 */
 	const std::array<float,45>& getSkeleton2D( nite::UserId uID )
 	{
 		return m_UserList[uID].m_aSkeleton2D;
 	}
 
+	/**
+	 * Get user skeleton in world coordinate
+	 */
 	const std::array<float,60>& getSkeleton3D( nite::UserId uID )
 	{
 		return m_UserList[uID].m_aSkeleton3D;

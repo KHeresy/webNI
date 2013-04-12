@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+// Boost Header
+#include <boost/signals2.hpp>
+
 // OpenNI and NiTE Header
 #include <OpenNI.h>
 #include <NiTE.h>
@@ -32,6 +35,10 @@ public:
  */
 class NIModule
 {
+public:
+	boost::signals2::signal<void(std::string)>	m_funcOnError;	/**< signal emit on error */
+	boost::signals2::signal<void(std::string)>	m_funcOnInfo;	/**< signal emit for information */
+
 public:
 	NIModule(){}
 
@@ -60,25 +67,37 @@ public:
 	/**
 	 * Check is the user is under tracking
 	 */
-	bool isTracked( nite::UserId uID )
+	bool isTracked( const nite::UserId uID ) const
 	{
-		return m_UserList[uID].m_bIsTracked;
+		return m_UserList.at( uID ).m_bIsTracked;
 	}
 
 	/**
 	 * Get user skeleton in depth coordinate
 	 */
-	const std::array<float,45>& getSkeleton2D( nite::UserId uID )
-	{
-		return m_UserList[uID].m_aSkeleton2D;
-	}
+	const std::array<float,45>& getSkeleton2D( const nite::UserId uID ) const;
 
 	/**
 	 * Get user skeleton in world coordinate
 	 */
-	const std::array<float,60>& getSkeleton3D( nite::UserId uID )
+	const std::array<float,60>& getSkeleton3D( const nite::UserId uID ) const;
+
+	/**
+	 * get a single joint position of skeleton
+	 */
+	const std::array<float,3> getJoint2D( const nite::UserId uID, const std::string& rJointName ) const
 	{
-		return m_UserList[uID].m_aSkeleton3D;
+		// TODO: no work yet
+		return std::array<float,3>();
+	}
+
+	/**
+	 * get a single joint position of skeleton
+	 */
+	const std::array<float,4> getJoint3D( const nite::UserId uID, const std::string& rJointName ) const
+	{
+		// TODO: no work yet
+		return std::array<float,4>();
 	}
 
 protected:
@@ -90,3 +109,23 @@ protected:
 
 	std::map<nite::UserId,CUserData>	m_UserList;
 };
+
+#pragma region inline functions
+inline const std::array<float,45>& NIModule::getSkeleton2D( const nite::UserId uID ) const
+{
+	return m_UserList.at( uID ).m_aSkeleton2D;
+}
+
+inline const std::array<float,60>& NIModule::getSkeleton3D( const nite::UserId uID ) const
+{
+	return m_UserList.at( uID ).m_aSkeleton3D;
+}
+
+inline std::array<uint16_t,2> NIModule::getDepthSize() const
+{
+	std::array<uint16_t,2> aSize = { uint16_t(m_DepthMode.getResolutionX()), uint16_t(m_DepthMode.getResolutionY()) };
+	return aSize;
+}
+
+#pragma endregion
+

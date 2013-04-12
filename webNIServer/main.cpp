@@ -1,3 +1,7 @@
+#pragma region Program define
+#define VERSION "0.0.1"
+#pragma endregion
+
 #pragma region Header Files
 
 // STL Header
@@ -44,6 +48,17 @@ void ExitProgram()
 	delete g_pServer;
 }
 
+void OutputServerCommand( std::ostream& rOutStream )
+{
+	rOutStream << "get depth_list" <<"\n";
+	rOutStream << "get user_list" <<"\n";
+	rOutStream << "get user <id> skeleton 2D" <<"\n";
+	rOutStream << "get user <id> skeleton 3D" <<"\n";
+	rOutStream << "get user <id> joint <joint_name> 2D" <<"\n";
+	rOutStream << "get user <id> joint <joint_name> 3D" <<"\n";
+}
+
+#pragma region inline functions
 inline void sendTextMessage( websocketpp::connection_hdl& hdl, const std::string& rMsg )
 {
 	g_pServer->send( hdl, rMsg, websocketpp::frame::opcode::TEXT );
@@ -54,6 +69,8 @@ inline void sendArrayData( websocketpp::connection_hdl& hdl, const TCon& rData )
 {
 	g_pServer->send( hdl, rData.data(), rData.size() * sizeof(rData[0]), websocketpp::frame::opcode::BINARY );
 }
+
+#pragma endregion
 
 #pragma region Callback function of WebSocket++
 void onMessage( websocketpp::connection_hdl hdl, TServer::message_ptr msg )
@@ -116,6 +133,31 @@ void onMessage( websocketpp::connection_hdl hdl, TServer::message_ptr msg )
 							{
 								sendTextMessage( hdl, "The user is not tracked" );
 							}
+						}
+						else if( sCmd == "joint" )
+						{
+							if( g_NIModule.isTracked( uID ) )
+							{
+								std::string sJointName;
+								ssInput >> sJointName;
+
+								ssInput >> sCmd;
+								if( sCmd == "2D" )
+								{
+									auto aJoint = g_NIModule.getJoint2D( uID, sJointName );
+									sendArrayData( hdl, aJoint );
+								}
+								else if( sCmd == "3D" )
+								{
+									auto aJoint = g_NIModule.getJoint3D( uID, sJointName );
+									sendArrayData( hdl, aJoint );
+								}
+							}
+							else
+							{
+								sendTextMessage( hdl, "The user is not tracked" );
+							}
+
 						}
 					}
 				}
@@ -196,6 +238,8 @@ int main( int argc, char** argv )
 	#pragma endregion
 
 	#pragma region Initialize OpenNI and NiTE
+	g_NIModule.m_funcOnError.connect( [](std::string sMsg){ std::cerr << "[ERROR][NIModule]" << sMsg << std::endl; } );
+	g_NIModule.m_funcOnInfo.connect( [](std::string sMsg){ std::cout << "[INFO][NIModule]" << sMsg << std::endl; } );
 	if( !g_NIModule.Initialize( sDevice ) )
 	{
 		std::cerr << " [ERROR] Can't initialize OpenNI and NiTE." << std::endl;

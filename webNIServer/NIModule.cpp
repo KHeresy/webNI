@@ -2,7 +2,9 @@
 
 // STL Header
 #include <algorithm>
-#include <iostream>
+
+// Boost Header
+#include <boost/format.hpp>
 
 // namespace
 using namespace std;
@@ -22,20 +24,20 @@ NIModule::~NIModule()
 bool NIModule::Initialize( const string& sDevice )
 {
 	// initialize OpenNI
-	cout << "Initialize OpenNI" << endl;
+	m_funcOnInfo( "Initialize OpenNI" );
 	if( OpenNI::initialize() != openni::STATUS_OK )
 	{
-		cerr << " [ERROR] Can't initialize OpenNI: " << OpenNI::getExtendedError() << endl;
+		m_funcOnError( "Can't initialize OpenNI: " + string( OpenNI::getExtendedError() ) );
 		return false;
 	}
 
 	// Open OpenNI Device
-	cout << "Open OpenNI Device" << endl;
+	m_funcOnInfo( "Open OpenNI Device" );
 	if( sDevice == "" )
 	{
 		if( m_Device.open( openni::ANY_DEVICE ) != openni::STATUS_OK )
 		{
-			cerr << " [ERROR] Can't open OpenNI Device: " << OpenNI::getExtendedError() << endl;
+			m_funcOnError( "Can't open OpenNI Device: " + string( OpenNI::getExtendedError() ) );
 			return false;
 		}
 	}
@@ -43,33 +45,33 @@ bool NIModule::Initialize( const string& sDevice )
 	{
 		if( m_Device.open( sDevice.c_str() ) != openni::STATUS_OK )
 		{
-			cerr << " [ERROR] Can't open OpenNI Device: " << OpenNI::getExtendedError() << endl;
+			m_funcOnError( "Can't open OpenNI Device: " + string( OpenNI::getExtendedError() ) );
 			return false;
 		}
 	}
 
 	// create depth VideoStream
-	cout << "Create OpenNI Depth VideoStream" << endl;
+	m_funcOnInfo( "Create OpenNI Depth VideoStream" );
 	if( m_DepthStream.create( m_Device, SENSOR_DEPTH ) != openni::STATUS_OK )
 	{
-		cerr << " [ERROR] Can't create OpenNI Depth VideoStream: " << OpenNI::getExtendedError() << endl;
+		m_funcOnError( "Can't create OpenNI Depth VideoStream: " + string( OpenNI::getExtendedError() ) );
 		return false;
 	}
 	m_DepthMode = m_DepthStream.getVideoMode();
 
 	// Initialize NiTE
-	cout << "Initialize NiTE" << endl;
+	m_funcOnInfo( "Initialize NiTE" );
 	if( NiTE::initialize() != nite::STATUS_OK )
 	{
-		cerr << " [ERROR] Can't initialize NiTE" << endl;
+		m_funcOnError( "Can't initialize NiTE" );
 		return false;
 	}
 
 	// create UserTracker
-	cout << "Cretae NiTE UserTracker" << endl;
+	m_funcOnInfo( "Cretae NiTE UserTracker" );
 	if( m_UserTracker.create( &m_Device ) != nite::STATUS_OK )
 	{
-		cerr << " [ERROR] Can't create NiTE User Tracker" << endl;
+		m_funcOnError( "Can't create NiTE User Tracker" );
 		return false;
 	}
 	return true;
@@ -88,13 +90,13 @@ void NIModule::UpdateData()
 
 			if( rUser.isNew() )
 			{
-				std::cout << " [NiTE] Found new user: " << uID << std::endl;
+				m_funcOnInfo( ( boost::format( "Found new user: %1%" ) % uID ).str() );
 				m_UserTracker.startSkeletonTracking( uID );
 				m_UserList.insert( make_pair( uID, CUserData() ) );
 			}
 			else if( rUser.isLost() )
 			{
-				std::cout << " [NiTE] Lost user: " << uID << std::endl;
+				m_funcOnInfo( ( boost::format( "Lost user: %1%" ) % uID ).str() );
 				m_UserList.erase( uID );
 			}
 			else if( rUser.isVisible() )
@@ -136,7 +138,7 @@ void NIModule::UpdateData()
 					if( !rUserData.m_bIsTracked )
 					{
 						rUserData.m_bIsTracked = true;
-						std::cout << " [NiTE] Strat tracking user: " << uID << std::endl;
+						m_funcOnInfo( ( boost::format( "Strat tracking user: %1%" ) % uID ).str() );
 					}
 				}
 				else
@@ -146,12 +148,6 @@ void NIModule::UpdateData()
 			}
 		}
 	}
-}
-
-array<uint16_t,2> NIModule::getDepthSize() const
-{
-	array<uint16_t,2> aSize = { uint16_t(m_DepthMode.getResolutionX()), uint16_t(m_DepthMode.getResolutionY()) };
-	return aSize;
 }
 
 std::vector<uint16_t> NIModule::getUserList() const

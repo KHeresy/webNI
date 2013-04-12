@@ -14,7 +14,9 @@
 #include <websocketpp/server.hpp>
 
 // Boost Header
-#include <boost/format.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 
 // application Header
@@ -68,6 +70,25 @@ template<typename TCon>
 inline void sendArrayData( websocketpp::connection_hdl& hdl, const TCon& rData )
 {
 	g_pServer->send( hdl, rData.data(), rData.size() * sizeof(rData[0]), websocketpp::frame::opcode::BINARY );
+}
+
+std::istream& operator>>( std::istream& rInput, openni::VideoMode& rMode )
+{
+	std::string sData;
+	rInput >> sData;
+	std::vector<std::string> vData;
+	boost::split( vData, sData, boost::is_any_of( "/@" ), boost::token_compress_on );
+	if( vData.size() != 3 )
+	{
+		throw std::exception( "video_mode data format error\n. example: 640/480@30" );
+	}
+	else
+	{
+		rMode.setResolution( boost::lexical_cast<int>( vData[0] ), boost::lexical_cast<int>( vData[1] ) );
+		rMode.setFps( boost::lexical_cast<int>( vData[2] ) );
+		rMode.setPixelFormat( openni::PIXEL_FORMAT_DEPTH_1_MM );
+	}
+	return rInput;
 }
 
 #pragma endregion
@@ -199,9 +220,11 @@ void onTimer( const websocketpp::lib::error_code& e )
 int main( int argc, char** argv )
 {
 	// Porgram Setting
-	int			iPort;
-	bool		bServerLogDisplay;
-	std::string	sDevice	= "";//openni::ANY_DEVICE;
+	int					iPort;
+	bool				bServerLogDisplay;
+	std::string			sDevice	= "";//openni::ANY_DEVICE;
+	openni::VideoMode	mDepthMode;
+	mDepthMode.setFps( 0 );
 
 	#pragma region Use boost::program_options to handle runtime setting
 	{
@@ -210,10 +233,11 @@ int main( int argc, char** argv )
 		// define program options
 		BPO::options_description bpoOptions( "Command Line Options" );
 		bpoOptions.add_options()
-			( "help,H",	BPO::bool_switch()->notifier( [&bpoOptions]( bool bH ){ if( bH ){ std::cout << bpoOptions << std::endl; exit(0); } } ),	"Help message" )
-			( "dlog",	BPO::bool_switch(&bServerLogDisplay),									"Display WebSocket Server log" )
-			( "port,P", BPO::value(&iPort)->value_name("port_num")->default_value(9002),		"The port to listen" )
-			( "file,F",	BPO::value(&sDevice)->value_name("ONI_File"),							"Open an ONI file for test" );
+			( "help,H",		BPO::bool_switch()->notifier( [&bpoOptions]( bool bH ){ if( bH ){ std::cout << bpoOptions << std::endl; exit(0); } } ),	"Help message" )
+			( "server_log",	BPO::bool_switch(&bServerLogDisplay),								"Display WebSocket Server log" )
+			( "port,P",		BPO::value(&iPort)->value_name("port_num")->default_value(9002),	"The port to listen" )
+			( "file,F",		BPO::value(&sDevice)->value_name("ONI_File"),						"Open an ONI file for test" )
+			( "video_mode",	BPO::value(&mDepthMode)->value_name("width/height@FPS"),			"VideoMode of depth" );
 
 		// prase
 		try
@@ -234,13 +258,19 @@ int main( int argc, char** argv )
 			std::cout << bpoOptions << std::endl;
 			return 1;
 		}
+		catch(std::exception e)
+		{
+			std::cerr << e.what() << std::endl;
+			std::cout << bpoOptions << std::endl;
+			return 2;
+		}
 	}
 	#pragma endregion
 
 	#pragma region Initialize OpenNI and NiTE
 	g_NIModule.m_funcOnError.connect( [](std::string sMsg){ std::cerr << "[ERROR][NIModule]" << sMsg << std::endl; } );
 	g_NIModule.m_funcOnInfo.connect( [](std::string sMsg){ std::cout << "[INFO][NIModule]" << sMsg << std::endl; } );
-	if( !g_NIModule.Initialize( sDevice ) )
+	if( !g_NIModule.Initialize( sDevice, mDepthMode ) )
 	{
 		std::cerr << " [ERROR] Can't initialize OpenNI and NiTE." << std::endl;
 		return -1;

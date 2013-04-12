@@ -47,7 +47,7 @@ public:
 	/**
 	 * Initialize OpenNI and NiTE
 	 */
-	bool Initialize( const std::string& sDevice );
+	bool Initialize( const std::string& sDevice, const openni::VideoMode& rMode );
 
 	/**
 	 * Update data, should be called in main loop

@@ -21,13 +21,13 @@ NIModule::~NIModule()
 	openni::OpenNI::shutdown();
 }
 
-bool NIModule::Initialize( const string& sDevice )
+bool NIModule::Initialize( const string& sDevice, const openni::VideoMode& rMode )
 {
 	// initialize OpenNI
 	m_funcOnInfo( "Initialize OpenNI" );
 	if( OpenNI::initialize() != openni::STATUS_OK )
 	{
-		m_funcOnError( "Can't initialize OpenNI: " + string( OpenNI::getExtendedError() ) );
+		m_funcOnError( "Can't initialize OpenNI:\n " + string( OpenNI::getExtendedError() ) );
 		return false;
 	}
 
@@ -37,7 +37,7 @@ bool NIModule::Initialize( const string& sDevice )
 	{
 		if( m_Device.open( openni::ANY_DEVICE ) != openni::STATUS_OK )
 		{
-			m_funcOnError( "Can't open OpenNI Device: " + string( OpenNI::getExtendedError() ) );
+			m_funcOnError( "Can't open OpenNI Device:\n " + string( OpenNI::getExtendedError() ) );
 			return false;
 		}
 	}
@@ -45,7 +45,7 @@ bool NIModule::Initialize( const string& sDevice )
 	{
 		if( m_Device.open( sDevice.c_str() ) != openni::STATUS_OK )
 		{
-			m_funcOnError( "Can't open OpenNI Device: " + string( OpenNI::getExtendedError() ) );
+			m_funcOnError( "Can't open OpenNI Device:\n " + string( OpenNI::getExtendedError() ) );
 			return false;
 		}
 	}
@@ -54,11 +54,22 @@ bool NIModule::Initialize( const string& sDevice )
 	m_funcOnInfo( "Create OpenNI Depth VideoStream" );
 	if( m_DepthStream.create( m_Device, SENSOR_DEPTH ) != openni::STATUS_OK )
 	{
-		m_funcOnError( "Can't create OpenNI Depth VideoStream: " + string( OpenNI::getExtendedError() ) );
+		m_funcOnError( "Can't create OpenNI Depth VideoStream:\n " + string( OpenNI::getExtendedError() ) );
 		return false;
 	}
-	m_DepthMode = m_DepthStream.getVideoMode();
 
+	// Apply Video Mode
+	if( rMode.getFps() != 0 )
+	{
+		m_funcOnInfo( "Set OpenNI Depth VideoStream VideoMode" );
+		if( m_DepthStream.setVideoMode( rMode ) != openni::STATUS_OK )
+		{
+			m_funcOnError( "Can't apply OpenNI Depth VideoStream VideoMode:\n " + string( OpenNI::getExtendedError() ) );
+			return false;
+		}
+	}
+	m_DepthMode = m_DepthStream.getVideoMode();
+	
 	// Initialize NiTE
 	m_funcOnInfo( "Initialize NiTE" );
 	if( NiTE::initialize() != nite::STATUS_OK )

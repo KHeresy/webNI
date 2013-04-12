@@ -65,3 +65,7 @@ Binary build environment:
 To use precompiled binary, you need to installed Visual C++ Redistributable for Visual Studio 2012 Update 1
 http://www.microsoft.com/en-us/download/details.aspx?id=30679
 (VSU1\vcredist_x86.exe)
+
+====
+
+Should can be build by gcc 4.6

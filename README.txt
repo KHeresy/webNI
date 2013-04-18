@@ -14,6 +14,7 @@ Here is a simple demo video: http://www.youtube.com/watch?v=tPKgvlb4stk
 This project is still in the early stage, every thing is not finalized.
 Any help/suggestion is welcome.
 
+See the detail in wiki pages: https://github.com/KHeresy/webNI/wiki/_pages
 
 My Blog: http://kheresy.wordpress.com/ (Chinese)
 

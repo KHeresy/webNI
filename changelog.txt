@@ -1,0 +1,9 @@
+The revision history of webNI
+
+
+2013/04/11 v0.1
+  First release version, commit to OpenNI
+  provide theuser list and user skeleton data
+
+2013/04/02 v0.0
+  Start the project

@@ -1,5 +1,15 @@
+/**
+ * This file is the NIModule of webNI server.
+ *				version 0.1+ @2013/04/18
+ *
+ * This server is developed by Heresy
+ * The full project: https://github.com/KHeresy/webNI
+ * My blog: http://kheresy.wordpress.com/
+ */
+
 #pragma once
 
+#pragma region Header Files
 // STL Header
 #include <array>
 #include <map>
@@ -12,6 +22,8 @@
 // OpenNI and NiTE Header
 #include <OpenNI.h>
 #include <NiTE.h>
+
+#pragma endregion
 
 /**
  * Class to keep user data
@@ -85,20 +97,12 @@ public:
 	/**
 	 * get a single joint position of skeleton
 	 */
-	const std::array<float,3> getJoint2D( const nite::UserId uID, const std::string& rJointName ) const
-	{
-		// TODO: no work yet
-		return std::array<float,3>();
-	}
+	const std::array<float,3> getJoint2D( const nite::UserId uID, const std::string& rJointName ) const;
 
 	/**
 	 * get a single joint position of skeleton
 	 */
-	const std::array<float,4> getJoint3D( const nite::UserId uID, const std::string& rJointName ) const
-	{
-		// TODO: no work yet
-		return std::array<float,4>();
-	}
+	const std::array<float,4> getJoint3D( const nite::UserId uID, const std::string& rJointName ) const;
 
 protected:
 	openni::Device				m_Device;
@@ -119,6 +123,18 @@ inline const std::array<float,45>& NIModule::getSkeleton2D( const nite::UserId u
 inline const std::array<float,60>& NIModule::getSkeleton3D( const nite::UserId uID ) const
 {
 	return m_UserList.at( uID ).m_aSkeleton3D;
+}
+
+inline const std::array<float,3> NIModule::getJoint2D( const nite::UserId uID, const std::string& rJointName ) const
+{
+	// TODO: no work yet
+	return std::array<float,3>();
+}
+
+inline const std::array<float,4> NIModule::getJoint3D( const nite::UserId uID, const std::string& rJointName ) const
+{
+	// TODO: no work yet
+	return std::array<float,4>();
 }
 
 inline std::array<uint16_t,2> NIModule::getDepthSize() const

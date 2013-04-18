@@ -1,5 +1,12 @@
 The revision history of webNI
 
+What will change in next version
+  Support get single joint data of user
+
+
+2013/04/18 v0.2
+  Support set VideoMode of dpeth map when start the server
+  Modify the return data of user list
 
 2013/04/11 v0.1
   First release version, commit to OpenNI

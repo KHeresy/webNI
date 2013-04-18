@@ -84,17 +84,23 @@
 
 		function UpdateData() {
 			gWebNI.getUserList(function (pWebNI, aUserList) {
-				if (aUserList.length > 0) {
-					gWebNI.getUserSkeleton2D(aUserList[0], function (pWebNI, mSkeleton) {
-						// clear canvas
-						ctxCanvas.clearRect(0, 0, ctxCanvas.canvas.width, ctxCanvas.canvas.height);
-						if (mSkeleton != null) {
-							DrawSkeleton(mSkeleton);
-						}
-						idTimer = setTimeout(UpdateData, 30);
-					});
+				var bHaveUserTracked = false;
+				for( var i in aUserList ){
+					if (aUserList[i].bTracked) {
+						gWebNI.getUserSkeleton2D(aUserList[i].uID, function (pWebNI, mSkeleton) {
+							// clear canvas
+							ctxCanvas.clearRect(0, 0, ctxCanvas.canvas.width, ctxCanvas.canvas.height);
+							if (mSkeleton != null) {
+								DrawSkeleton(mSkeleton);
+							}
+							idTimer = setTimeout(UpdateData, 30);
+						});
+
+						bHaveUserTracked = true;
+						break;
+					}
 				}
-				else {
+				if( !bHaveUserTracked ){
 					idTimer = setTimeout(UpdateData, 30);
 				}
 			});

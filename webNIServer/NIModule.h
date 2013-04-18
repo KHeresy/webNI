@@ -31,14 +31,24 @@
 class CUserData
 {
 public:
-	bool					m_bIsTracked;
+	enum EStatus
+	{
+		USER_NONE		= 0,
+		USER_NEW		= 1,
+		USER_NORMAL		= 2,
+		USER_TRACKED	= 3,
+		USER_INVISIBLE	= 4
+	};
+
+public:
+	EStatus					m_eStatus;
 	std::array<float,45>	m_aSkeleton2D;
 	std::array<float,60>	m_aSkeleton3D;
 
 public:
 	CUserData()
 	{
-		m_bIsTracked = false;
+		m_eStatus = USER_NEW;
 	}
 };
 
@@ -81,7 +91,7 @@ public:
 	 */
 	bool isTracked( const nite::UserId uID ) const
 	{
-		return m_UserList.at( uID ).m_bIsTracked;
+		return ( m_UserList.at( uID ).m_eStatus == CUserData::USER_TRACKED );
 	}
 
 	/**

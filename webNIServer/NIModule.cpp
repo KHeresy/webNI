@@ -119,51 +119,58 @@ void NIModule::UpdateData()
 				m_funcOnInfo( ( boost::format( "Lost user: %1%" ) % uID ).str() );
 				m_UserList.erase( uID );
 			}
-			else if( rUser.isVisible() )
+			else
 			{
 				auto& rUserData = m_UserList[uID];
-				const Skeleton& rSkeleton = rUser.getSkeleton();
-				if( rSkeleton.getState() == nite::SKELETON_TRACKED )
+				if( rUser.isVisible() )
 				{
-					SkeletonJoint aJointList[15];
-					aJointList[ 0]	= rSkeleton.getJoint( nite::JOINT_HEAD				);
-					aJointList[ 1]	= rSkeleton.getJoint( nite::JOINT_NECK				);
-					aJointList[ 2]	= rSkeleton.getJoint( nite::JOINT_LEFT_SHOULDER		);
-					aJointList[ 3]	= rSkeleton.getJoint( nite::JOINT_RIGHT_SHOULDER	);
-					aJointList[ 4]	= rSkeleton.getJoint( nite::JOINT_LEFT_ELBOW		);
-					aJointList[ 5]	= rSkeleton.getJoint( nite::JOINT_RIGHT_ELBOW		);
-					aJointList[ 6]	= rSkeleton.getJoint( nite::JOINT_LEFT_HAND			);
-					aJointList[ 7]	= rSkeleton.getJoint( nite::JOINT_RIGHT_HAND		);
-					aJointList[ 8]	= rSkeleton.getJoint( nite::JOINT_TORSO				);
-					aJointList[ 9]	= rSkeleton.getJoint( nite::JOINT_LEFT_HIP			);
-					aJointList[10]	= rSkeleton.getJoint( nite::JOINT_RIGHT_HIP			);
-					aJointList[11]	= rSkeleton.getJoint( nite::JOINT_LEFT_KNEE			);
-					aJointList[12]	= rSkeleton.getJoint( nite::JOINT_RIGHT_KNEE		);
-					aJointList[13]	= rSkeleton.getJoint( nite::JOINT_LEFT_FOOT			);
-					aJointList[14]	= rSkeleton.getJoint( nite::JOINT_RIGHT_FOOT		);
-
-					#pragma omp parallel for
-					for( int i = 0; i < 15; ++ i )
+					const Skeleton& rSkeleton = rUser.getSkeleton();
+					if( rSkeleton.getState() == nite::SKELETON_TRACKED )
 					{
-						const Point3f& rPos = aJointList[i].getPosition();
-						rUserData.m_aSkeleton3D[ i * 4     ] = rPos.x;
-						rUserData.m_aSkeleton3D[ i * 4 + 1 ] = rPos.y;
-						rUserData.m_aSkeleton3D[ i * 4 + 2 ] = rPos.z;
-						rUserData.m_aSkeleton3D[ i * 4 + 3 ] = aJointList[i].getPositionConfidence();
+						SkeletonJoint aJointList[15];
+						aJointList[ 0]	= rSkeleton.getJoint( nite::JOINT_HEAD				);
+						aJointList[ 1]	= rSkeleton.getJoint( nite::JOINT_NECK				);
+						aJointList[ 2]	= rSkeleton.getJoint( nite::JOINT_LEFT_SHOULDER		);
+						aJointList[ 3]	= rSkeleton.getJoint( nite::JOINT_RIGHT_SHOULDER	);
+						aJointList[ 4]	= rSkeleton.getJoint( nite::JOINT_LEFT_ELBOW		);
+						aJointList[ 5]	= rSkeleton.getJoint( nite::JOINT_RIGHT_ELBOW		);
+						aJointList[ 6]	= rSkeleton.getJoint( nite::JOINT_LEFT_HAND			);
+						aJointList[ 7]	= rSkeleton.getJoint( nite::JOINT_RIGHT_HAND		);
+						aJointList[ 8]	= rSkeleton.getJoint( nite::JOINT_TORSO				);
+						aJointList[ 9]	= rSkeleton.getJoint( nite::JOINT_LEFT_HIP			);
+						aJointList[10]	= rSkeleton.getJoint( nite::JOINT_RIGHT_HIP			);
+						aJointList[11]	= rSkeleton.getJoint( nite::JOINT_LEFT_KNEE			);
+						aJointList[12]	= rSkeleton.getJoint( nite::JOINT_RIGHT_KNEE		);
+						aJointList[13]	= rSkeleton.getJoint( nite::JOINT_LEFT_FOOT			);
+						aJointList[14]	= rSkeleton.getJoint( nite::JOINT_RIGHT_FOOT		);
 
-						m_UserTracker.convertJointCoordinatesToDepth( rPos.x, rPos.y, rPos.z, &(rUserData.m_aSkeleton2D[ i * 3 ]), &(rUserData.m_aSkeleton2D[ i * 3 + 1 ]) );
-						rUserData.m_aSkeleton3D[ i * 3 + 2 ] = aJointList[i].getPositionConfidence();
+						#pragma omp parallel for
+						for( int i = 0; i < 15; ++ i )
+						{
+							const Point3f& rPos = aJointList[i].getPosition();
+							rUserData.m_aSkeleton3D[ i * 4     ] = rPos.x;
+							rUserData.m_aSkeleton3D[ i * 4 + 1 ] = rPos.y;
+							rUserData.m_aSkeleton3D[ i * 4 + 2 ] = rPos.z;
+							rUserData.m_aSkeleton3D[ i * 4 + 3 ] = aJointList[i].getPositionConfidence();
+
+							m_UserTracker.convertJointCoordinatesToDepth( rPos.x, rPos.y, rPos.z, &(rUserData.m_aSkeleton2D[ i * 3 ]), &(rUserData.m_aSkeleton2D[ i * 3 + 1 ]) );
+							rUserData.m_aSkeleton3D[ i * 3 + 2 ] = aJointList[i].getPositionConfidence();
+						}
+
+						if( rUserData.m_eStatus != CUserData::USER_TRACKED )
+						{
+							rUserData.m_eStatus = CUserData::USER_TRACKED;
+							m_funcOnInfo( ( boost::format( "Strat tracking user: %1%" ) % uID ).str() );
+						}
 					}
-
-					if( !rUserData.m_bIsTracked )
+					else
 					{
-						rUserData.m_bIsTracked = true;
-						m_funcOnInfo( ( boost::format( "Strat tracking user: %1%" ) % uID ).str() );
+						rUserData.m_eStatus = CUserData::USER_NORMAL;
 					}
 				}
 				else
 				{
-					rUserData.m_bIsTracked = false;
+					rUserData.m_eStatus = CUserData::USER_INVISIBLE;
 				}
 			}
 		}
@@ -175,6 +182,7 @@ std::vector<uint16_t> NIModule::getUserList() const
 	std::vector<uint16_t> aList;
 	for_each( m_UserList.begin(), m_UserList.end(), [&aList]( const pair<UserId,CUserData>& rUser ){
 		aList.push_back( rUser.first );
+		aList.push_back( rUser.second.m_eStatus );
 	} );
 	return aList;
 }

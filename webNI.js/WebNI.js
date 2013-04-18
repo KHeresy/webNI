@@ -7,6 +7,12 @@
  * My blog: http://kheresy.wordpress.com/
  */
 
+
+function UserData(uID, bTracked) {
+	this.uID		= uID;
+	this.bTracked	= bTracked;
+}
+
 function Joint2D(x, y, c) {
 	this.x = x;
 	this.y = y;
@@ -48,15 +54,19 @@ function webNI() {
 
 	// get current user list
 	//	onDoneFunc	Callback function when done. 
-	//				This function will get two result, this webNI object and an array of UserID
+	//				This function will get two result, this webNI object and an array of UserData
 	this.getUserList = function (onDoneFunc) {
 		var pThis = this;
 		pThis.sStatus = "get user_list";
 		pThis.wsNIServer.onmessage = function (msg) {
+			pThis.aUserList = new Array();
 			if (msg.data instanceof ArrayBuffer) {
-				pThis.aUserList = new Uint16Array(msg.data);
-				if (pThis.aUserList.length > 0 && pThis.aUserList[0] != 0) {
+				var aListData = new Uint16Array(msg.data);
+				if (aListData.length > 1) {
 					pThis.sStatus = "get user_list done";
+					for (var i = 0 ; i < aListData.length / 2; ++i) {
+						pThis.aUserList[i] = new UserData(aListData[i], ( aListData[i+1] == 3 ) );
+					}
 					onDoneFunc(pThis, pThis.aUserList);
 				}
 				else {

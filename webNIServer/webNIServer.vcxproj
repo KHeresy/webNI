@@ -136,6 +136,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(BOOST_LIB);$(OPENNI2_LIB);$(NITE2_LIB)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenNI2.lib;NiTE2.lib</AdditionalDependencies>
+      <Version>0.2</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

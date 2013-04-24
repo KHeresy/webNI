@@ -92,6 +92,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(BOOST_INCLUDE);$(WEBSOCKETPP_INCLUDE);$(OPENNI2_INCLUDE);$(NITE2_INCLUDE)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +129,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(BOOST_INCLUDE);$(WEBSOCKETPP_INCLUDE);$(OPENNI2_INCLUDE);$(NITE2_INCLUDE)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

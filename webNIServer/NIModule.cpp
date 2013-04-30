@@ -20,6 +20,8 @@ using namespace std;
 using namespace openni;
 using namespace nite;
 
+map<string,size_t> NIModule::s_JointIdx = NIModule::BuildJointTable();
+
 NIModule::~NIModule()
 {
 	m_UserTracker.destroy();
@@ -177,7 +179,7 @@ void NIModule::UpdateData()
 	}
 }
 
-std::vector<uint16_t> NIModule::getUserList() const
+vector<uint16_t> NIModule::getUserList() const
 {
 	std::vector<uint16_t> aList;
 	for_each( m_UserList.begin(), m_UserList.end(), [&aList]( const pair<UserId,CUserData>& rUser ){
@@ -185,4 +187,25 @@ std::vector<uint16_t> NIModule::getUserList() const
 		aList.push_back( rUser.second.m_eStatus );
 	} );
 	return aList;
+}
+
+map<string,size_t> NIModule::BuildJointTable()
+{
+	map<string,size_t> mTable;
+	mTable.insert( make_pair( "head"		,  0 ) );
+	mTable.insert( make_pair( "neck"		,  1 ) );
+	mTable.insert( make_pair( "lshoulder"	,  2 ) );
+	mTable.insert( make_pair( "rshoulder"	,  3 ) );
+	mTable.insert( make_pair( "lelbow"		,  4 ) );
+	mTable.insert( make_pair( "relbow"		,  5 ) );
+	mTable.insert( make_pair( "lhand"		,  6 ) );
+	mTable.insert( make_pair( "rhand"		,  7 ) );
+	mTable.insert( make_pair( "torso"		,  8 ) );
+	mTable.insert( make_pair( "lhip"		,  9 ) );
+	mTable.insert( make_pair( "rhip"		, 10 ) );
+	mTable.insert( make_pair( "lknee"		, 11 ) );
+	mTable.insert( make_pair( "rknee"		, 12 ) );
+	mTable.insert( make_pair( "lfoot"		, 13 ) );
+	mTable.insert( make_pair( "rfoot"		, 14 ) );
+	return mTable;
 }

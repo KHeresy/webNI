@@ -122,6 +122,11 @@ protected:
 	nite::UserTrackerFrameRef	m_UserFrame;
 
 	std::map<nite::UserId,CUserData>	m_UserList;
+
+protected:
+	static std::map<std::string,size_t>	s_JointIdx;
+
+	static std::map<std::string,size_t> BuildJointTable();
 };
 
 #pragma region inline functions
@@ -137,14 +142,34 @@ inline const std::array<float,60>& NIModule::getSkeleton3D( const nite::UserId u
 
 inline const std::array<float,3> NIModule::getJoint2D( const nite::UserId uID, const std::string& rJointName ) const
 {
-	// TODO: no work yet
-	return std::array<float,3>();
+	try
+	{
+		size_t uIdx = s_JointIdx.at( rJointName );
+		auto itData = m_UserList.at( uID ).m_aSkeleton2D.begin() + uIdx;
+		std::array<float,3> aJoint = { *itData, *(++itData), *(++itData) };
+		return aJoint;
+	}
+	catch(...)
+	{
+		std::array<float,3> aEmpty = {0,0,0};
+		return aEmpty;
+	}
 }
 
 inline const std::array<float,4> NIModule::getJoint3D( const nite::UserId uID, const std::string& rJointName ) const
 {
-	// TODO: no work yet
-	return std::array<float,4>();
+	try
+	{
+		size_t uIdx = s_JointIdx.at( rJointName );
+		auto itData = m_UserList.at( uID ).m_aSkeleton2D.begin() + uIdx;
+		std::array<float,4> aJoint = { *itData, *(++itData), *(++itData), *(++itData) };
+		return aJoint;
+	}
+	catch(...)
+	{
+		std::array<float,4> aEmpty = {0,0,0,0};
+		return aEmpty;
+	}
 }
 
 inline std::array<uint16_t,2> NIModule::getDepthSize() const

@@ -16,7 +16,7 @@ function UserData(uID, bTracked) {
 function Joint2D(x, y, c) {
 	this.x = x;
 	this.y = y;
-	this.c = x;
+	this.c = c;
 }
 
 function Joint3D(x, y, z, c) {
@@ -157,6 +157,52 @@ function webNI() {
 			}
 		}
 		pThis.wsNIServer.send("get user " + userId + " skeleton 3D");
+	}
+
+	// get user 2D joint data
+	//	userId		The id of user to get skeleton, should get from getUserList()
+	// JointName	The name of joint, the value should be 'head', 'neck', 'lshoulder', 'rshoulder', 'lelbow', 'relbow', 'lhand', 'rhand', 'torso', 'lhip', 'rhip', 'lknee', 'rknee', 'lfoot', 'rfoot'
+	//	onDoneFunc	Callback function when done. 
+	//				This function will get two result, this webNI object and a Joint2D object.
+	this.getJoint2D = function (userId, JointName, onDoneFunc) {
+		var pThis = this;
+		pThis.sStatus = "get user joint 2D";
+		pThis.wsNIServer.onmessage = function (msg) {
+			if (msg.data instanceof ArrayBuffer) {
+				var aSkletonArray = new Float32Array(msg.data);
+
+				var Joint  = new Joint2D(aSkletonArray[0], aSkletonArray[1], aSkletonArray[2]);
+				onDoneFunc(pThis, Joint);
+			}
+			else {
+				pThis.sStatus = msg.data;
+				onDoneFunc(pThis, null);
+			}
+		}
+		pThis.wsNIServer.send("get user " + userId + " joint " + JointName + " 2D");
+	}
+
+	// get user 3D joint data
+	//	userId		The id of user to get skeleton, should get from getUserList()
+	// JointName	The name of joint, the value should be 'head', 'neck', 'lshoulder', 'rshoulder', 'lelbow', 'relbow', 'lhand', 'rhand', 'torso', 'lhip', 'rhip', 'lknee', 'rknee', 'lfoot', 'rfoot'
+	//	onDoneFunc	Callback function when done. 
+	//				This function will get two result, this webNI object and a Joint3D object.
+	this.getJoint3D = function (userId, JointName, onDoneFunc) {
+		var pThis = this;
+		pThis.sStatus = "get user joint 3D";
+		pThis.wsNIServer.onmessage = function (msg) {
+			if (msg.data instanceof ArrayBuffer) {
+				var aSkletonArray = new Float32Array(msg.data);
+
+				var Joint = new Joint3D(aSkletonArray[0], aSkletonArray[1], aSkletonArray[2], aSkletonArray[3]);
+				onDoneFunc(pThis, Joint);
+			}
+			else {
+				pThis.sStatus = msg.data;
+				onDoneFunc(pThis, null);
+			}
+		}
+		pThis.wsNIServer.send("get user " + userId + " joint " + JointName + " 3D");
 	}
 
 	this.setOnClose = function (onClodeFunc) {

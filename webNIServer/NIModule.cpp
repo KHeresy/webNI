@@ -156,7 +156,7 @@ void NIModule::UpdateData()
 							rUserData.m_aSkeleton3D[ i * 4 + 3 ] = aJointList[i].getPositionConfidence();
 
 							m_UserTracker.convertJointCoordinatesToDepth( rPos.x, rPos.y, rPos.z, &(rUserData.m_aSkeleton2D[ i * 3 ]), &(rUserData.m_aSkeleton2D[ i * 3 + 1 ]) );
-							rUserData.m_aSkeleton3D[ i * 3 + 2 ] = aJointList[i].getPositionConfidence();
+							rUserData.m_aSkeleton2D[ i * 3 + 2 ] = aJointList[i].getPositionConfidence();
 						}
 
 						if( rUserData.m_eStatus != CUserData::USER_TRACKED )

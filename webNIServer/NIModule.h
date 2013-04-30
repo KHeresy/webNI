@@ -145,7 +145,7 @@ inline const std::array<float,3> NIModule::getJoint2D( const nite::UserId uID, c
 	try
 	{
 		size_t uIdx = s_JointIdx.at( rJointName );
-		auto itData = m_UserList.at( uID ).m_aSkeleton2D.begin() + uIdx;
+		auto itData = m_UserList.at( uID ).m_aSkeleton2D.begin() + 3 * uIdx;
 		std::array<float,3> aJoint = { *itData, *(++itData), *(++itData) };
 		return aJoint;
 	}
@@ -161,7 +161,7 @@ inline const std::array<float,4> NIModule::getJoint3D( const nite::UserId uID, c
 	try
 	{
 		size_t uIdx = s_JointIdx.at( rJointName );
-		auto itData = m_UserList.at( uID ).m_aSkeleton2D.begin() + uIdx;
+		auto itData = m_UserList.at( uID ).m_aSkeleton2D.begin() + 4 * uIdx;
 		std::array<float,4> aJoint = { *itData, *(++itData), *(++itData), *(++itData) };
 		return aJoint;
 	}

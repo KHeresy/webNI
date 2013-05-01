@@ -1,6 +1,6 @@
 /**
  * This file is webNI JavaScript client library.
- *				version 0.1+ @2013/04/18
+ *				version 0.3 @2013/05/01
  *
  * This server is developed by Heresy
  * The full project: https://github.com/KHeresy/webNI

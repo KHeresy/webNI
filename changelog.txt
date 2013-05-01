@@ -2,9 +2,11 @@ The revision history of webNI
 
 What will change in next version
   Support get depth map?
+  Commands may have big modification
 
 2013/04/30 v0.3
   Support get single joint data of user
+  Bug fix
  
 2013/04/18 v0.2
   Support set VideoMode of dpeth map when start the server

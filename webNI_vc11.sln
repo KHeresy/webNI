@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "webNIServer", "webNIServer\webNIServer.vcxproj", "{C60CEB35-991C-4790-BC62-26501E3B0384}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "webNICleint", "webNIClient\webNICleint.vcxproj", "{D19F967F-1197-4AC7-B2DA-3AA7A1AA06F5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,12 +19,6 @@ Global
 		{C60CEB35-991C-4790-BC62-26501E3B0384}.Release|Win32.Build.0 = Release|Win32
 		{C60CEB35-991C-4790-BC62-26501E3B0384}.Release|x64.ActiveCfg = Release|x64
 		{C60CEB35-991C-4790-BC62-26501E3B0384}.Release|x64.Build.0 = Release|x64
-		{D19F967F-1197-4AC7-B2DA-3AA7A1AA06F5}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D19F967F-1197-4AC7-B2DA-3AA7A1AA06F5}.Debug|Win32.Build.0 = Debug|Win32
-		{D19F967F-1197-4AC7-B2DA-3AA7A1AA06F5}.Debug|x64.ActiveCfg = Debug|Win32
-		{D19F967F-1197-4AC7-B2DA-3AA7A1AA06F5}.Release|Win32.ActiveCfg = Release|Win32
-		{D19F967F-1197-4AC7-B2DA-3AA7A1AA06F5}.Release|Win32.Build.0 = Release|Win32
-		{D19F967F-1197-4AC7-B2DA-3AA7A1AA06F5}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
